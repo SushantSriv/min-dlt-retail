@@ -1,68 +1,81 @@
-<h1>Delta Live Tables Example Notebooks</h1>
+# 🇳🇴 SSB Population Analytics on Databricks (Community Edition)
 
-<p align="center">
-  <img src="https://databricks.com/wp-content/uploads/2021/10/logo-color-delta-lake-1.svg" width="200"/><br>
-  <strong>Delta Live Tables</strong> is a new framework designed to enable customers to successfully declaratively define, deploy, test & upgrade data pipelines and eliminate operational burdens associated with the management of such pipelines.
-</p>
-<p align="center">
-  This repo contains Delta Live Table examples designed to get customers started with
-  building, deploying and running pipelines.
-</p>
+A lightweight project that explores Norwegian municipality‑level population data (2022 – 2025) entirely on the **free Databricks Community Edition**.
 
-# Getting Started
+---
 
-* Connect your Databricks workspace using the <img src="https://databricks.com/wp-content/uploads/2021/05/repos.png" width="140" style=" vertical-align:middle"/> feature to [this repo](https://github.com/databricks/delta-live-tables-notebooks)
+## 📂 Project structure
 
-* Choose one of the examples and create your pipeline!
+| Path / file                    | Description                                              |
+|--------------------------------|----------------------------------------------------------|
+| `population_analysis.ipynb`    | Notebook that loads, cleans, and analyses the Excel file |
+| `befolkning.xlsx`              | Raw SSB dataset (“Population by region, sex, age…”)      |
+| `README.md`                    | This file                                               |
 
-# Examples
-## Wikipedia
-The Wikipedia clickstream sample is a great way to jump start using Delta Live Tables (DLT).  It is a simple bificating pipeline that creates a table on your JSON data, cleanses the data, and then creates two tables.  
+---
 
-<img src="images/wikipedia-00-pipeline.png" width="500"/>
+## ✨ What the notebook does
 
-This sample is available for both [SQL](https://github.com/databricks/delta-live-tables-notebooks/blob/main/sql/Wikipedia.sql) and [Python](https://github.com/databricks/delta-live-tables-notebooks/blob/main/python/Wikipedia.py).
+1. **Load** &nbsp;`befolkning.xlsx` (official SSB Excel file)  
+2. **Clean** &nbsp;out metadata rows, assign clear column names  
+3. **Cast** &nbsp;year columns (`2022–2025`) to integers  
+4. **Analyses**  
 
+   | Analysis | Purpose |
+   |----------|---------|
+   | **Time‑series** | Auto‑plot the **3 largest municipalities** (based on 2025 pop.) |
+   | **Growth rate** | Top‑10 municipalities by % growth 2022 → 2025 |
+   | **Age pyramid** | Bar chart of age classes for a selected municipality |
 
-### Running your pipeline
+5. **Visualise** results directly in the Databricks notebook  
+6. *(Optional)* One‑click **Databricks dashboard** creation from any plot  
 
-**1. Create your pipeline using the following parameters**
+---
 
-  * From your Databricks workspace, click **Jobs**, then **Delta Live Tables** and click on **Create Pipeline**
-  * Fill in the **Pipeline Name**, e.g. `Wikipedia`
-  * For the **Notebook Libraries**, fill in the path of the notebook such as `/Repos/michael@databricks.com/delta-live-tables-notebooks/SQL/Wikipedia`
-    
-    <img src="https://databricks.com/wp-content/uploads/2022/04/DLT-Pipeline-UI-1.png" width="400"/>
-  * To publish your tables, add the `target` parameter to specify which database you want to persist your tables, e.g. `wiki_demo`.
+## 🛠 Tech stack
 
+- **Databricks Community Edition** (Spark in the cloud, free)
+- **PySpark** – fast aggregation
+- **Pandas + Matplotlib** – plotting
+- **openpyxl** – reading Excel
 
-**2. Edit your pipeline JSON**
+---
 
-  * Once you have setup your pipeline, click **Edit Settings** near the top, the JSON will look similar to below
+## 🚀 Run it yourself (5 minutes)
 
-    <img src="https://databricks.com/wp-content/uploads/2022/04/DLT-Pipeline-JSON-1.png" width="400"/>  
+### 1. Create / log in to a free Databricks CE workspace  
+<https://community.cloud.databricks.com/>
 
+### 2. Upload the files  
+1. Go to **Workspace ▶ Users ▶ \<your email>**  
+2. **Import ▶ Upload File** → select `population_analysis.ipynb`  
+3. Open the notebook  
+4. Upload `befolkning.xlsx` via **Files** menu (or `https://community.cloud.databricks.com/files`) → it ends up in `/FileStore/tables/befolkning.xlsx`
 
-**3. Click Start**
+### 3. Run the notebook cells  
+The code automatically detects the Excel path and produces all plots.
 
-  * To view the progress of your pipeline, refer to the progress flow near the bottom of the pipeline details UI as noted in the following image. 
+### 4. (Optional) Build a dashboard  
+Right‑click any plot ▶ **Create Dashboard** → pin additional visuals.
 
-    <img src="https://raw.githubusercontent.com/databricks/tech-talks/master/images/dlt-wikipedia_wiki-spark-progress.png" width="600"/>
+---
 
+## 📊 Sample output
 
-**4. Reviewing the results**
+| Municipality | Population 2025 |
+|--------------|----------------:|
+| K‑0301 Oslo  | 712 000 |
+| K‑4601 Bergen| 283 000 |
+| K‑5001 Trondheim | 215 000 |
 
-  * Once your pipeline has completed processing, you can review the data by opening up a new Databricks notebook and running the following SQL statements:
+![timeseries](docs/img/timeseries.png)  
+*Fig 1 – Population trend 2022 – 2025 for the three largest municipalities*
 
-    ```
-    %sql
-    -- Review the top referrers to Wikipedia's Apache Spark articles
-    SELECT * FROM wiki_demo.top_spark_referers
-    ```
+---
 
-  * Unsurprisingly, the top referrer is "Google" which you can see graphically when you convert your table into an area chart.
-  
-    <img src="https://raw.githubusercontent.com/databricks/tech-talks/master/images/dlt-wikipedia_wiki-spark-area-chart.png" width="700"/>
+## 🔌 Local (offline) testing
 
-
-
+```bash
+python -m venv venv && source venv/bin/activate
+pip install pandas openpyxl matplotlib pyspark
+python scripts/run_local.py   # simple CLI demo without Databricks
