@@ -1,4 +1,4 @@
-# 🇳🇴 SSB Population Analytics on Databricks (Community Edition)
+#SSB Population Analytics on Databricks (Community Edition)
 
 A lightweight project that explores Norwegian municipality‑level population data (2022 – 2025) entirely on the **free Databricks Community Edition**.
 
